@@ -44,5 +44,7 @@ fit = FitEncoder_Weight()
 fit.write_weight_scale(**values)
 fit.finish()
 
-a = open('weight-scale_%s.fit' % values['timestamp'].strftime('%y-%m-%d-%H-%I'), 'w')
+a = open('weight-scale_%s.fit' %
+         values['timestamp'].strftime('%y-%m-%d-%H-%I'), 'w')
+
 a.write(fit.get_value())
