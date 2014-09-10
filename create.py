@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from fit import FitEncoder_Weight
 from datetime import datetime
 
