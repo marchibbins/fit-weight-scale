@@ -47,6 +47,6 @@ fit.write_weight_scale(**values)
 fit.finish()
 
 a = open('weight-scale_%s.fit' %
-         values['timestamp'].strftime('%y-%m-%d-%H-%I'), 'w')
+         values['timestamp'].strftime('%y-%m-%d-%H-%M'), 'w')
 
 a.write(fit.get_value())
