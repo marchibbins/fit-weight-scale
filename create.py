@@ -40,13 +40,18 @@ if (values['weight'] and values['percent_fat'] and values['muscle_mass']
         calculated = values['weight'] - values['muscle_mass'] - fat_weight
         values['bone_mass'] = max(0, calculated)
 
-values['timestamp'] = datetime.now()
+timestamp = raw_input('Time (e.g. 2015-01-31-23-01): ')
+try:
+	values['timestamp'] = datetime.strptime(timestamp, '%Y-%m-%d-%H-%M')
+except:
+        print '- Date not recognized, defaulting to now'
+	values['timestamp'] = datetime.now()
 
 fit = FitEncoder_Weight()
 fit.write_weight_scale(**values)
 fit.finish()
 
 a = open('weight-scale_%s.fit' %
-         values['timestamp'].strftime('%y-%m-%d-%H-%M'), 'w')
+         values['timestamp'].strftime('%Y-%m-%d-%H-%M'), 'w')
 
 a.write(fit.get_value())
