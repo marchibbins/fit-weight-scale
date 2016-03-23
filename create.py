@@ -4,54 +4,35 @@ from fit import FitEncoder_Weight
 from datetime import datetime
 
 
-def raw_float(message):
-    str = raw_input(message)
-    if str:
-        try:
-            return float(str)
-        except ValueError:
-            print '- Enter a number only'
-            return raw_float(message)
-    return None
+measures = [
+    ['2016-01-01-06-00', 75.0, 10.0, 60.0, 65.0, 4000]
+]
 
-values = {
-    'weight': None,
-    'percent_fat': None,
-    'muscle_mass': None,
-    'bone_mass': None,
-    'percent_hydration': None,
-    'active_met': None,
-    'metabolic_age': None,
-    'basal_met': None,
-    'visceral_fat_mass': None,
-    'visceral_fat_rating': None,
-    'physique_rating': None,
-}
+for measure in measures:
+    values = {
+        'weight': measure[1],
+        'percent_fat': measure[2],
+        'muscle_mass': measure[4],
+        'bone_mass': None,
+        'percent_hydration': measure[3],
+        'active_met': measure[5],
+        'metabolic_age': None,
+        'basal_met': None,
+        'visceral_fat_mass': None,
+        'visceral_fat_rating': None,
+        'physique_rating': None,
+    }
 
-for key, value in values.iteritems():
-    values[key] = raw_float('Enter %s: ' % key.replace('_', ' '))
+    fat_weight = values['weight'] * values['percent_fat'] / 100
+    calculated = values['weight'] - values['muscle_mass'] - fat_weight
+    values['bone_mass'] = max(0, calculated)
+    values['timestamp'] = datetime.strptime(measure[0], '%Y-%m-%d-%H-%M')
 
-if (values['weight'] and values['percent_fat'] and values['muscle_mass']
-        and not values['bone_mass']):
-    calc_bone_mass = raw_input('Approximate bone mass'
-                               ' from other settings? (y/N) ')
-    if calc_bone_mass == 'y':
-        fat_weight = values['weight'] * values['percent_fat'] / 100
-        calculated = values['weight'] - values['muscle_mass'] - fat_weight
-        values['bone_mass'] = max(0, calculated)
+    fit = FitEncoder_Weight()
+    fit.write_weight_scale(**values)
+    fit.finish()
 
-timestamp = raw_input('Time (e.g. 2015-01-31-23-01): ')
-try:
-	values['timestamp'] = datetime.strptime(timestamp, '%Y-%m-%d-%H-%M')
-except:
-        print '- Date not recognized, defaulting to now'
-	values['timestamp'] = datetime.now()
+    a = open('weight-scale_%s.fit' %
+             values['timestamp'].strftime('%Y-%m-%d-%H-%M'), 'w')
 
-fit = FitEncoder_Weight()
-fit.write_weight_scale(**values)
-fit.finish()
-
-a = open('weight-scale_%s.fit' %
-         values['timestamp'].strftime('%Y-%m-%d-%H-%M'), 'w')
-
-a.write(fit.get_value())
+    a.write(fit.get_value())
